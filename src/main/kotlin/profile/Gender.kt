@@ -1,4 +1,4 @@
-package org.example.profile
+package profile
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 enum class Gender {
     @SerialName("Male")
-    Male,
+    MAlE,
 
     @SerialName("Female")
-    Female
+    FEMALE
 }

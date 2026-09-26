@@ -1,16 +1,26 @@
-package org.example.profile
-
-import kotlinx.serialization.json.Json
-import java.io.File
+package profile
 
 fun main() {
-    val file = File("profiles.json")
-    val people = loadProfiles(file)
-    people.forEach { println(it) }
-
+    val people = ProfileRepository.profiles
+    var filteredPeople = filter(people) { it.age > 25 }
+    filteredPeople = filter(filteredPeople) { it.gender == Gender.MAlE }
+    filteredPeople = filter(filteredPeople) { it.firstName.startsWith('A') }
+    filteredPeople = filter(filteredPeople) { it.age < 30 }
+    filteredPeople.forEach { println(it) }
+    transform(filteredPeople) { it.firstName }
+        .forEach { println(it) }
+    transform(filteredPeople) { it.lastName }
+        .forEach { println(it) }
+    transform(filteredPeople) { it.age }
+        .forEach { println(it) }
+    transform(filteredPeople) { it.copy(age = it.age + 1) }
+        .forEach { println(it) }
 }
 
-fun loadProfiles(file: File): List<Person> {
-    val content = file.readText()
-    return Json.decodeFromString(content)
+fun <R> transform(profiles: List<Person>, operation: (Person) -> R): List<R> {
+    return profiles.map { operation(it) }
+}
+
+fun filter(people: List<Person>, isSuitable: (Person) -> Boolean): List<Person> {
+    return people.filter { isSuitable(it) }
 }
