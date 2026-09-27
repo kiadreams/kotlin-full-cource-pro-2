@@ -2,17 +2,13 @@ package products
 
 
 fun main() {
-    val products = ProductRepository.productCards
-    var filtered = filter(products) { it.productCategory == ProductCategory.CLOTHING }
-    filtered = transform(filtered) { it.copy(productPrice = it.productPrice * 2) }
-    transform(filtered) { "${it.id} - ${it.productName} - ${it.productPrice}" }
+    ProductRepository.productCards
+        .also { println("Фильтруем по категории - Одежда") }
+        .filter { it.productCategory == ProductCategory.CLOTHING }
+        .also { println("Увеличиваем ценник в 2 раза") }
+        .map { it.copy(productPrice = it.productPrice * 2) }
+        .also { println("Создаем список строк: id - name - price") }
+        .map { "${it.id} - ${it.productName} - ${it.productPrice}" }
+        .also { println("Выводим каждый элемент...") }
         .forEach { println(it) }
-}
-
-fun <R> transform(products: List<ProductCard>, operation: (ProductCard) -> R): List<R> {
-    return products.map { operation(it) }
-}
-
-fun filter(products: List<ProductCard>, isSuitable: (ProductCard) -> Boolean): List<ProductCard> {
-    return products.filter { isSuitable(it) }
 }
