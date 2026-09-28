@@ -2,7 +2,7 @@ package users
 
 
 fun main() {
-    val display = Display()
-    display.show()
+    val displayUser = DisplayUser()
+    displayUser.show()
     UsersRepository.getInstance("qwerty").users.take(3).forEach(::println)
 }
