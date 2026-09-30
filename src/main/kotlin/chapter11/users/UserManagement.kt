@@ -2,7 +2,8 @@ package chapter11.users
 
 
 fun main() {
-    DisplayUser().show()
+    Display().show()
+    Display().show()
     Administrator(UsersRepository.getInstance("qwerty"))
         .work()
 }
