@@ -1,12 +1,13 @@
-package chapter11.users
+package users
 
-import chapter11.observer.Observer
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.Insets
 import javax.swing.JFrame
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
+import kotlin.concurrent.thread
+
 
 class Display {
 
@@ -26,8 +27,8 @@ class Display {
             defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         }
 
-        UsersRepository.getInstance("qwerty").addOnUsersChangeListener { users ->
-            users.joinToString("\n").let { textArea.text = it }
+        UsersRepository.getInstance("qwerty").addOnUsersChangeListener {
+            textArea.text = it.joinToString("\n")
         }
     }
 }

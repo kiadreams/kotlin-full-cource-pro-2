@@ -1,5 +1,7 @@
-package chapter11.observer
+package observer
 
 fun interface Observer<T> {
+
     fun onChange(newElements: T)
+
 }

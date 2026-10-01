@@ -1,4 +1,4 @@
-package chapter11.users
+package users
 
 enum class OperationType(val title: String) {
     EXIT("Exit"),

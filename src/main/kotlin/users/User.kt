@@ -1,4 +1,4 @@
-package chapter11.users
+package users
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

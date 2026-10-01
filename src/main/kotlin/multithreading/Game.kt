@@ -1,4 +1,4 @@
-package chapter11.multithreading
+package multithreading
 
 import kotlin.concurrent.thread
 import kotlin.random.Random

@@ -1,4 +1,4 @@
-package chapter11.dogs
+package dogs
 
 import kotlin.system.exitProcess
 

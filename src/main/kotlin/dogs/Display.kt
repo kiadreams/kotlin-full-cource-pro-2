@@ -1,6 +1,5 @@
-package chapter11.dogs
+package dogs
 
-import chapter11.observer.Observer
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.Insets
@@ -27,8 +26,8 @@ class Display {
             add(scrollPane)
         }
 
-        DogRepository.getInstance("dog-shelter").addOnDogsChangeListeners { dogs ->
-            dogs.joinToString("\n").let { textArea.text = it }
+        DogRepository.getInstance("dog-shelter").addOnDogsChangeListeners {
+            textArea.text = it.joinToString("\n")
         }
     }
 }

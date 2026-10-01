@@ -1,4 +1,4 @@
-package chapter11.dogs
+package dogs
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

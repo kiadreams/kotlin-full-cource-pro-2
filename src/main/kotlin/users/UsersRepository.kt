@@ -1,10 +1,11 @@
-package chapter11.users
+package users
 
-import chapter11.observer.Observer
+import observer.Observer
 import kotlinx.serialization.json.Json
+import observer.Observable
 import java.io.File
 
-class UsersRepository private constructor() {
+class UsersRepository private constructor() : Observable<List<User>> {
 
     init {
         println("Creating repository")
@@ -12,10 +13,12 @@ class UsersRepository private constructor() {
 
     private val file = File("users.json")
 
-    private val observers = mutableListOf<Observer<List<User>>>()
+    private val _observers = mutableListOf<Observer<List<User>>>()
+    override val observers: List<Observer<List<User>>>
+        get() = _observers.toList()
 
     private val _users = loadUser()
-    val users: List<User>
+    override val currentValue: List<User>
         get() = _users.toList()
 
     private fun loadUser(): MutableList<User> {
@@ -23,14 +26,26 @@ class UsersRepository private constructor() {
         return Json.decodeFromString<MutableList<User>>(file.readText().trim())
     }
 
+    fun saveChanges() {
+        Json.encodeToString(_users).let { file.writeText(it) }
+    }
+
+    override fun registerObserver(observer: Observer<List<User>>) {
+        _observers.add(observer)
+        observer.onChange(currentValue)
+    }
+
     fun addOnUsersChangeListener(observer: Observer<List<User>>) {
-        observers.add(observer)
-        observer.onChange(users)
+        registerObserver(observer)
+    }
+
+    override fun unregisterObserver(observer: Observer<List<User>>) {
+        _observers.remove(observer)
     }
 
     companion object {
-        private var instance: UsersRepository? = null
 
+        private var instance: UsersRepository? = null
         fun getInstance(password: String): UsersRepository {
             val correctPassword = File("password_users.txt").readText().trim()
             if (password != correctPassword) throw IllegalArgumentException("Wrong password")
@@ -39,10 +54,6 @@ class UsersRepository private constructor() {
             }
             return instance!!
         }
-    }
-
-    fun saveChanges() {
-        Json.encodeToString(_users).let { file.writeText(it) }
     }
 
     fun addUser(user: User) {
@@ -57,7 +68,4 @@ class UsersRepository private constructor() {
             .also { if (it) notifyObservers() }
     }
 
-    private fun notifyObservers() {
-        observers.forEach { it.onChange(users) }
-    }
 }

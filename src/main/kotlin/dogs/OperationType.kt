@@ -1,4 +1,4 @@
-package chapter11.dogs
+package dogs
 
 enum class OperationType(val title: String) {
     EXIT("Exit"),

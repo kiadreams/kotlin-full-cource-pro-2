@@ -1,4 +1,4 @@
-package chapter11.users
+package users
 
 
 fun main() {

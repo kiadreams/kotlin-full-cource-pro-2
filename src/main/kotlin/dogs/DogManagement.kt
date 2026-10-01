@@ -1,4 +1,4 @@
-package chapter11.dogs
+package dogs
 
 
 fun main() {
