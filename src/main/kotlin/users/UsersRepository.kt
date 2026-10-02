@@ -1,11 +1,13 @@
 package users
 
-import observer.Observer
+import command.Command
 import kotlinx.serialization.json.Json
+import observer.MutableObservable
 import observer.Observable
 import java.io.File
 
-class UsersRepository private constructor() : Observable<List<User>> {
+
+class UsersRepository private constructor() {
 
     init {
         println("Creating repository")
@@ -13,13 +15,13 @@ class UsersRepository private constructor() : Observable<List<User>> {
 
     private val file = File("users.json")
 
-    private val _observers = mutableListOf<Observer<List<User>>>()
-    override val observers: List<Observer<List<User>>>
-        get() = _observers.toList()
+    private val userList = loadUser()
 
-    private val _users = loadUser()
-    override val currentValue: List<User>
-        get() = _users.toList()
+    val users: Observable<List<User>>
+        field = MutableObservable(userList.toList())
+
+    val oldestUser: Observable<User>
+        field = MutableObservable<User>(userList.maxBy { it.age })
 
     private fun loadUser(): MutableList<User> {
         if (!file.exists() || file.readText().isBlank()) return mutableListOf()
@@ -27,20 +29,7 @@ class UsersRepository private constructor() : Observable<List<User>> {
     }
 
     fun saveChanges() {
-        Json.encodeToString(_users).let { file.writeText(it) }
-    }
-
-    override fun registerObserver(observer: Observer<List<User>>) {
-        _observers.add(observer)
-        observer.onChange(currentValue)
-    }
-
-    fun addOnUsersChangeListener(observer: Observer<List<User>>) {
-        registerObserver(observer)
-    }
-
-    override fun unregisterObserver(observer: Observer<List<User>>) {
-        _observers.remove(observer)
+        Json.encodeToString(userList).let { file.writeText(it) }
     }
 
     companion object {
@@ -57,15 +46,29 @@ class UsersRepository private constructor() : Observable<List<User>> {
     }
 
     fun addUser(user: User) {
-        _users.maxOfOrNull { it.id }
-            ?.let { _users.add(user.copy(id = it + 1)) }
-            ?: _users.add(user.copy(id = 1))
-        notifyObservers()
+        Thread.sleep(10_000)
+        userList.maxOfOrNull { it.id }
+            ?.let { userList.add(user.copy(id = it + 1)) }
+            ?: userList.add(user.copy(id = 1))
+        users.currentValue = userList.toList()
+        if (user.age > oldestUser.currentValue.age) {
+            oldestUser.currentValue = user
+        }
     }
 
     fun deleteUser(id: Int) {
-        _users.removeIf { it.id == id }
-            .also { if (it) notifyObservers() }
+        Thread.sleep(10_000)
+        userList.removeIf { it.id == id }
+            .also {
+                if (it) {
+                    users.currentValue = userList.toList()
+                }
+            }
+        if (userList.isNotEmpty()) {
+            userList.maxBy { it.age }
+                .takeIf { it != oldestUser.currentValue }
+                ?.let { oldestUser.currentValue = it }
+        }
     }
 
 }

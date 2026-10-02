@@ -26,7 +26,7 @@ class Display {
             add(scrollPane)
         }
 
-        DogRepository.getInstance("dog-shelter").addOnDogsChangeListeners {
+        DogRepository.getInstance("dog-shelter").dogs.registerObserver {
             textArea.text = it.joinToString("\n")
         }
     }

@@ -45,13 +45,16 @@ class Administrator(private val repository: DogRepository) {
             ?.takeIf { it in Breed.entries.indices }
             ?.let { Breed.entries[it] }
             ?: Breed.BULLDOG
-        repository.addDog(Dog(-1, name, bread, weight))
+        DogsInvoker.addCommand {
+            repository.addDog(Dog(-1, name, bread, weight))
+        }
     }
 
     private fun deleteDog() {
         print("Enter id of dog: ")
         readln().trim().toIntOrNull()
-            ?.let { repository.deleteDog(it) }
+            ?.let {
+                DogsInvoker.addCommand { repository.deleteDog(it) }
+            }
     }
-
 }

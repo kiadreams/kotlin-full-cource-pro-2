@@ -6,9 +6,10 @@ import java.awt.Insets
 import javax.swing.JFrame
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
+import kotlin.concurrent.thread
 
 
-class Display {
+class Display2 {
 
     fun show() {
         val textArea = JTextArea().apply {
@@ -26,8 +27,8 @@ class Display {
             defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         }
 
-        UsersRepository.getInstance("qwerty").users.registerObserver {
-            textArea.text = it.joinToString("\n")
+        UsersRepository.getInstance("qwerty").oldestUser.registerObserver {
+            textArea.text = "The oldest user in list is: $it"
         }
     }
 }
