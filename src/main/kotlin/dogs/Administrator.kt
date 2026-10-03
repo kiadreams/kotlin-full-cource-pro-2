@@ -27,7 +27,9 @@ class Administrator(private val repository: DogRepository) {
     }
 
     private fun exitApp() {
-        repository.saveChanges()
+        DogInvoker.addCommand(
+            AdministratorCommands.SaveChanges(repository)
+        )
         println("Bye!")
         exitProcess(0)
     }
@@ -45,16 +47,18 @@ class Administrator(private val repository: DogRepository) {
             ?.takeIf { it in Breed.entries.indices }
             ?.let { Breed.entries[it] }
             ?: Breed.BULLDOG
-        DogsInvoker.addCommand {
-            repository.addDog(Dog(-1, name, bread, weight))
-        }
+        DogsInvoker.addCommand(
+            AdministratorCommands.AddDog(repository, Dog(-1, name, bread, weight))
+        )
     }
 
     private fun deleteDog() {
         print("Enter id of dog: ")
         readln().trim().toIntOrNull()
             ?.let {
-                DogsInvoker.addCommand { repository.deleteDog(it) }
+                DogsInvoker.addCommand(
+                    AdministratorCommands.DeleteDog(repository, it)
+                )
             }
     }
 }

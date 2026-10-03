@@ -25,7 +25,7 @@ class Administrator(private val repository: UsersRepository) {
     }
 
     private fun exitApp() {
-        repository.saveChanges()
+        UsersInvoker.addCommand(AdministratorCommands.SaveChanges(repository))
         println("Bye!")
         exitProcess(0)
     }
@@ -37,16 +37,14 @@ class Administrator(private val repository: UsersRepository) {
         val lastName = readln().trim()
         print("Enter age: ")
         val age = readln().trim().toIntOrNull() ?: 23
-        UsersInvoker.addCommand {
-            repository.addUser(User(-1, name, lastName, age))
-        }
+        UsersInvoker.addCommand(AdministratorCommands.AddUser(repository, User(-1, name, lastName, age)))
     }
 
     private fun deleteUser() {
         print("Enter id: ")
-        val id  = readln().trim().toIntOrNull()
+        val id = readln().trim().toIntOrNull()
             ?.let {
-                UsersInvoker.addCommand { repository.deleteUser(it) }
+                UsersInvoker.addCommand(AdministratorCommands.DeleteUser(repository, it))
             }
     }
 }

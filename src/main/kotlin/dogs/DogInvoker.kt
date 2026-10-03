@@ -1,11 +1,11 @@
-package users
+package dogs
 
 import command.Command
 import command.Invoker
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.concurrent.thread
 
-object UsersInvoker : Invoker<AdministratorCommands> {
+object DogInvoker : Invoker<AdministratorCommands> {
 
     private val commands = LinkedBlockingQueue<Command>()
 
