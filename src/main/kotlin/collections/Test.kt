@@ -3,10 +3,11 @@ package collections
 import kotlin.time.measureTime
 
 fun main() {
-    val numbers = NumbersArrayList()
-//    val numbers = arrayListOf<Int>()
+    val numbers1 = NumbersArrayList()
+    val numbers2 = arrayListOf<Int>()
+    val numbers3 = NumbersLinkedList()
     val time = measureTime {
-        repeat(1000_000) { numbers.add(0, it) }
+        repeat(1_000_000) { numbers3.add(0, it) }
     }
     println(time)
 }
