@@ -1,13 +1,14 @@
 package collections
 
+import kotlin.random.Random
 import kotlin.time.measureTime
 
 fun main() {
-    val numbers1 = NumbersArrayList()
-    val numbers2 = arrayListOf<Int>()
-    val numbers3 = NumbersLinkedList()
-    val time = measureTime {
-        repeat(1_000_000) { numbers3.add(0, it) }
+    val numbers = NumbersHashSet()
+    repeat(100) {
+        numbers.add(it)
     }
-    println(time)
+    println(numbers.contains(56))
+    numbers.remove(56)
+    println(numbers.contains(56))
 }
