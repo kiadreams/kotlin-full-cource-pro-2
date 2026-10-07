@@ -1,31 +1,32 @@
 package collections
 
-class NumbersLinkedList : NumbersMutableList {
+class MyLinkedList<T> : MyMutableList<T> {
 
-    private var first: Node? = null
-    private var last: Node? = null
+    private var first: Node<T>? = null
+    private var last: Node<T>? = null
     override var size: Int = 0
         private set
 
-    override fun add(number: Int) {
+    override fun add(element: T): Boolean {
         val prevLast = last
-        last = Node(prevLast,number, null)
+        last = Node(prevLast, element, null)
         if (prevLast == null) {
             first = last
         } else {
             prevLast.next = last
         }
         size++
+        return true
     }
 
-    override fun add(index: Int, number: Int) {
+    override fun add(index: Int, element: T) {
         checkIndexToAdd(index)
         if (index == size) {
-            add(number)
+            add(element)
             return
         }
         if (index == 0) {
-            val node = Node(null, number, first)
+            val node = Node(null, element, first)
             first?.prev = node
             first = node
             size++
@@ -33,23 +34,23 @@ class NumbersLinkedList : NumbersMutableList {
         }
         val before = getNode(index - 1)
         val after = before.next
-        val newNode = Node(before, number, after)
+        val newNode = Node(before, element, after)
         before.next = newNode
         after?.prev = newNode
         size++
     }
 
-    override fun plus(number: Int) {
-        add(number)
+    override fun plus(element: T) {
+        add(element)
     }
 
-    override fun get(index: Int): Int {
+    override fun get(index: Int): T {
         checkIndex(index)
         return getNode(index).item
     }
 
-    override fun set(index: Int, number: Int) {
-        add(index, number)
+    override fun set(index: Int, element: T) {
+        add(index, element)
     }
 
     override fun removeAt(index: Int) {
@@ -58,10 +59,10 @@ class NumbersLinkedList : NumbersMutableList {
         unlink(node)
     }
 
-    override fun remove(number: Int) {
+    override fun remove(element: T) {
         var node = first
         repeat(size) {
-            if (node?.item == number) {
+            if (node?.item == element) {
                 unlink(node)
                 return
             }
@@ -69,8 +70,8 @@ class NumbersLinkedList : NumbersMutableList {
         }
     }
 
-    override fun minus(number: Int) {
-        remove(number)
+    override fun minus(element: T) {
+        remove(element)
     }
 
     override fun clear() {
@@ -79,10 +80,10 @@ class NumbersLinkedList : NumbersMutableList {
         size = 0
     }
 
-    override fun contains(number: Int): Boolean {
+    override fun contains(element: T): Boolean {
         var node = first
         repeat(size) {
-            if (node?.item == number) {
+            if (node?.item == element) {
                 return true
             }
             node = node?.next
@@ -90,7 +91,23 @@ class NumbersLinkedList : NumbersMutableList {
         return false
     }
 
-    private fun getNode(index: Int): Node {
+    override fun iterator(): Iterator<T> {
+        return object : Iterator<T> {
+            private var nextNode: Node<T>? = first
+
+            override fun hasNext(): Boolean {
+                return nextNode != null
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun next(): T {
+                return (nextNode?.item as T)
+                    .also { nextNode = nextNode?.next }
+            }
+        }
+    }
+
+    private fun getNode(index: Int): Node<T> {
         if (index == 0) return first!!
         if (index == size - 1) return last!!
 
@@ -121,7 +138,7 @@ class NumbersLinkedList : NumbersMutableList {
         }
     }
 
-    private fun unlink(node: Node) {
+    private fun unlink(node: Node<T>) {
         val before = node.prev
         val after = node.next
         before?.next = after
@@ -135,9 +152,9 @@ class NumbersLinkedList : NumbersMutableList {
         size--
     }
 
-    class Node(
-        var prev: Node? = null,
-        var item: Int,
-        var next: Node? = null
+    class Node<T>(
+        var prev: Node<T>? = null,
+        var item: T,
+        var next: Node<T>? = null
     )
 }
