@@ -2,12 +2,14 @@ package collections
 
 class MyLinkedList<T> : MyMutableList<T> {
 
+    private var modCount: Int = 0
     private var first: Node<T>? = null
     private var last: Node<T>? = null
     override var size: Int = 0
         private set
 
     override fun add(element: T): Boolean {
+        modCount++
         val prevLast = last
         last = Node(prevLast, element, null)
         if (prevLast == null) {
@@ -20,6 +22,7 @@ class MyLinkedList<T> : MyMutableList<T> {
     }
 
     override fun add(index: Int, element: T) {
+        modCount++
         checkIndexToAdd(index)
         if (index == size) {
             add(element)
@@ -54,12 +57,14 @@ class MyLinkedList<T> : MyMutableList<T> {
     }
 
     override fun removeAt(index: Int) {
+        modCount++
         checkIndex(index)
         val node = getNode(index)
         unlink(node)
     }
 
     override fun remove(element: T) {
+        modCount++
         var node = first
         repeat(size) {
             if (node?.item == element) {
@@ -75,6 +80,7 @@ class MyLinkedList<T> : MyMutableList<T> {
     }
 
     override fun clear() {
+        modCount++
         first = null
         last = null
         size = 0
@@ -91,9 +97,10 @@ class MyLinkedList<T> : MyMutableList<T> {
         return false
     }
 
-    override fun iterator(): Iterator<T> {
-        return object : Iterator<T> {
+    override fun iterator(): MutableIterator<T> {
+        return object : MutableIterator<T> {
             private var nextNode: Node<T>? = first
+            private val currentModCount = modCount
 
             override fun hasNext(): Boolean {
                 return nextNode != null
@@ -101,8 +108,13 @@ class MyLinkedList<T> : MyMutableList<T> {
 
             @Suppress("UNCHECKED_CAST")
             override fun next(): T {
+                if (currentModCount != modCount) throw ConcurrentModificationException()
                 return (nextNode?.item as T)
                     .also { nextNode = nextNode?.next }
+            }
+
+            override fun remove() {
+                TODO("Not yet implemented")
             }
         }
     }

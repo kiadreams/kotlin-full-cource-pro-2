@@ -4,11 +4,13 @@ import kotlin.math.abs
 
 class MyHashSet<T> : MyMutableSet<T> {
 
+    private var modCount: Int = 0
     private var elements = arrayOfNulls<Node<T>>(INITIAL_CAPACITY)
     override var size: Int = 0
         private set
 
     override fun add(element: T): Boolean {
+        modCount++
         if (size >= elements.size * LOAD_FACTOR) {
             increaseArray()
         }
@@ -16,6 +18,7 @@ class MyHashSet<T> : MyMutableSet<T> {
     }
 
     override fun remove(element: T) {
+        modCount++
         val elementPosition = getElementPosition(element, elements.size)
         var node: Node<T>? = elements[elementPosition] ?: return
         if (node?.item == element) {
@@ -35,6 +38,7 @@ class MyHashSet<T> : MyMutableSet<T> {
     }
 
     override fun clear() {
+        modCount++
         elements = arrayOfNulls<Node<T>>(INITIAL_CAPACITY)
         size = 0
     }
@@ -51,8 +55,9 @@ class MyHashSet<T> : MyMutableSet<T> {
         return false
     }
 
-    override fun iterator(): Iterator<T> {
-        return object : Iterator<T> {
+    override fun iterator(): MutableIterator<T> {
+        return object : MutableIterator<T> {
+            private val currentModCount = modCount
             private var currentPosition = 0
             private var nextNode: Node<T>? = elements[currentPosition]
             private var count = 0
@@ -63,6 +68,7 @@ class MyHashSet<T> : MyMutableSet<T> {
 
             @Suppress("UNCHECKED_CAST")
             override fun next(): T {
+                if (currentModCount != modCount) throw ConcurrentModificationException()
                 while (nextNode == null) {
                     nextNode = elements[++currentPosition]
                 }
@@ -70,6 +76,10 @@ class MyHashSet<T> : MyMutableSet<T> {
                     count++
                     nextNode = nextNode?.next
                 }
+            }
+
+            override fun remove() {
+                TODO("Not yet implemented")
             }
         }
     }

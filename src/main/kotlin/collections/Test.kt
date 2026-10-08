@@ -1,11 +1,8 @@
 package collections
 
 fun main() {
-    val numbers = MyHashSet<Int>()
-    repeat(100) {
-        numbers.add(it)
-    }
-    for (number in numbers) {
-        println(number)
-    }
+    val mutNumbers = myListOf(1, 2, 3, 4, 5)
+    (mutNumbers as MyMutableList<Int>).add(100)
+    mutNumbers.forEach(::println)
+
 }
