@@ -121,7 +121,7 @@ class MyHashSet<T> : MyMutableSet<T> {
     }
 
     class Node<T>(
-        var item: T, var next: Node<T>? = null
+        val item: T, var next: Node<T>? = null
     )
 
     companion object {
