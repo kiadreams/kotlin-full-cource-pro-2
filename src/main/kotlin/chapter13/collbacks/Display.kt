@@ -10,6 +10,8 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
+import javax.swing.WindowConstants
+import kotlin.concurrent.thread
 
 object Display {
 
@@ -21,19 +23,25 @@ object Display {
         addActionListener {
             isEnabled = false
             infoAria.text = "Loading book information...\n"
-            val book = loadBook()
-            infoAria.append("""
-                Book: ${book.title}
-                Year: ${book.year}
-                Genre: ${book.genre}
-            """.trimIndent())
-            infoAria.append("\nLoading author information...\n")
-            val author  = loadAuthors(book)
-            infoAria.append("""
-                Author: ${author.name}
-                Biography: ${author.bio}
-            """.trimIndent())
-            isEnabled = true
+            loadBook { book ->
+                infoAria.append(
+                    """
+                    Book: ${book.title}
+                    Year: ${book.year}
+                    Genre: ${book.genre}
+                """.trimIndent()
+                )
+                infoAria.append("\nLoading author information...\n")
+                loadAuthors(book) { author ->
+                    infoAria.append(
+                        """
+                        Author: ${author.name}
+                        Biography: ${author.bio}
+                    """.trimIndent()
+                    )
+                    isEnabled = true
+                }
+            }
         }
     }
     private val timerLabel = JLabel("Time: 00:00")
@@ -47,6 +55,7 @@ object Display {
         add(topPanel, BorderLayout.NORTH)
         add(JScrollPane(infoAria), BorderLayout.CENTER)
         size = Dimension(800, 600)
+        defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
     }
 
     fun show() {
@@ -54,25 +63,30 @@ object Display {
         startTimer()
     }
 
-    private fun loadBook(): Book {
-
-        Thread.sleep(3000)
-        return Book("1984", 1949, "Distopia")
+    private fun loadBook(callback: (Book) -> Unit) {
+        thread {
+            Thread.sleep(3000)
+            callback(Book("1984", 1949, "Distopia"))
+        }
     }
 
-    private fun loadAuthors(book: Book): Author {
-        Thread.sleep(3000)
-        return Author("George Orwell", "British writer and journalist")
+    private fun loadAuthors(book: Book, callback: (Author) -> Unit) {
+        thread {
+            Thread.sleep(3000)
+            callback(Author("George Orwell", "British writer and journalist"))
+        }
     }
 
     private fun startTimer() {
-        var totalSeconds = 0
-        while (true) {
-            val minutes = totalSeconds / 60
-            val seconds = totalSeconds % 60
-            timerLabel.text = "Time: %02d:%02d".format(minutes, seconds)
-            Thread.sleep(1000)
-            totalSeconds++
+        thread {
+            var totalSeconds = 0
+            while (true) {
+                val minutes = totalSeconds / 60
+                val seconds = totalSeconds % 60
+                timerLabel.text = "Time: %02d:%02d".format(minutes, seconds)
+                Thread.sleep(1000)
+                totalSeconds++
+            }
         }
     }
 }
